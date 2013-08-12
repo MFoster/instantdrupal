@@ -6,31 +6,32 @@ Vagrant and puppet team up to spin up a brand new instance of a Drupal web serve
 Use Virtual machines to isolate your development environment.  Abstract project
 dependencies to the VMs and leave your host stable and productive.  
 
-
-## Host Requirements
-
-Virtual Box
+Host Requirements
 -----------
+
+### Virtual Box
+
 
 VirtualBox is a virtualization software to provide the work
 horse of the virtual machine operations and isolation of environments
 and resources.
 
-Vagrant
--------
+### Vagrant
+
 
 Vagrant is a virtualization utility to provide an easier to use
 command line interface that uses a configuration file to assist
 with how a virtual machine is built and set up.
 
-Lucid Box
----------
+### Lucid Box
+
 
 The vagrant configuration file in this repo uses "lucid64" as it's box.
 This box is provided at the vagrant site.  Follow the instructions there
 to download the box and to add it to your vagrant registry.
 
-## Installation
+Installation
+------------
 
 Clone the repo into your home directory.  The repo is actually going to be your
 "vagrant directory". Commands issued in this directory will be executed
@@ -57,7 +58,6 @@ into the machine and find out.
 
 ```bash
 vagrant ssh
-
 ifconfig
 ```
 
@@ -74,8 +74,8 @@ Run through the Drupal Installation wizard and configure your new Drupal Web Ser
 The default configurations for the database are...
 
 ```yml
-  database: drupal
-  username: drupal_user
-  password: time2shine
+database: drupal
+username: drupal_user
+password: time2shine
 ```
 
