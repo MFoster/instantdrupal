@@ -48,7 +48,7 @@ Now change into the newly created directory and issue the
 vagrant up commands
 
 ```bash
-cd instandrupal
+cd instantdrupal
 vagrant up
 ```
 
