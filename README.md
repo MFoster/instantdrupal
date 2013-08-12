@@ -9,14 +9,14 @@ dependencies to the VMs and leave your host stable and productive.
 Host Requirements
 -----------
 
-### Virtual Box
+### [Virtual Box][2]
 
 
 VirtualBox is a virtualization software to provide the work
 horse of the virtual machine operations and isolation of environments
 and resources.
 
-### Vagrant
+### [Vagrant][2]
 
 
 Vagrant is a virtualization utility to provide an easier to use
@@ -26,16 +26,19 @@ with how a virtual machine is built and set up.
 ### Lucid Box
 
 
-The vagrant configuration file in this repo uses "lucid64" as it's box.
-This box is provided at the vagrant site.  Follow the instructions there
-to download the box and to add it to your vagrant registry.
+The vagrant configuration file in this repo uses [lucid64][3] as it's box.
+This box is provided at the vagrant site.  Check out the [vagrant documentation][4]
+to learn more about adding boxes.
+
+```bash
+vagrant add lucid64 http://files.vagrantup.com/lucid64.box 
+```
 
 Installation
 ------------
 
-Clone the repo into your home directory.  The repo is actually going to be your
-"vagrant directory". Commands issued in this directory will be executed
-against the configuration and the VM that spawns from it.
+Clone the repo into your home directory. Commands issued in this directory 
+will be executed against the configuration and the VM that spawns from it.
 
 ```bash
 git clone git@github.com:MFoster/instantdrupal.git 
@@ -61,9 +64,8 @@ vagrant ssh
 ifconfig
 ```
 
-You'll see 3 network devices, one will be 10.0.0.X and another will be the loopback, 127.0.0.1 but
-the second device is typically the public interface.  It will have an
-address like 192.168 or 172.10.
+You'll see 3 network devices, but the second device is typically the public interface. 
+It will have an address like 192.168 or 172.10.
 
 Once you've obtained the IP, you can set up a local domain for it or just 
 plug the IP into your browser.
@@ -79,3 +81,7 @@ username: drupal_user
 password: time2shine
 ```
 
+[1]: http://www.vagrantup.com/                      "Vagrant"
+[2]: https://www.virtualbox.org/wiki/Downloads      "VirtualBox"
+[3]: http://files.vagrantup.com/lucid64.box         "Download Lucid 64"
+[4]: http://docs.vagrantup.com/v2/boxes.html        "Vagrant Install Box"
