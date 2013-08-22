@@ -3,16 +3,18 @@ $drupalver = "drupal-7.23"
 $puppetver = "2.7.22-1puppetlabs1"
 $db_password = "time2shine"
 $home = "/home/vagrant"
+$drushurl = "https://github.com/drush-ops/drush/archive/7.x-5.x.tar.gz"
+$drushversion = "drush-7.x-5.x"
 
 exec { "update":
   command => "apt-get update",
   path    => "/usr/bin"
 }
 
-package { ["apache2", "mysql-server", "git-core", "php5", "php5-mysql", "php5-gd"]:
+package { ["apache2", "mysql-server", "git-core", "php5", "php5-mysql", "php5-gd", "php5-cli"]:
   ensure => present,
   require => Exec["update"],
-  before => [Exec["createdb"], File["/var/www/drupal"], File["/etc/apache2/conf.d/drupal.conf"]]
+  before => [Exec["createdb"], User["www-data"], File["/etc/apache2/conf.d/drupal.conf"]]
 }
 
 service { "apache2":
@@ -37,12 +39,13 @@ file { "/etc/apache2/conf.d/drupal.conf":
 
 file { "${home}/www":
   ensure => directory,
-  owner => "vagrant"
+  owner => "www-data"
 }
 
-file { "/var/www/drupal":
+file { "/var/www":
   ensure => directory,
-  owner => "www-data"
+  owner => "www-data",
+  before => File["/var/www/current"]
 }
 exec { "wgetdrupal":
   command => "wget ${drupalurl}",
@@ -53,11 +56,33 @@ exec { "wgetdrupal":
 }
 exec { "unzipdrupal":
   command => "tar xvfz ${drupalver}.tar.gz",
-  cwd     => $home,
+  cwd     => "${home}/www",
   path    => "/bin",
   creates => "${home}/www/${drupalver}",
   require => Exec["wgetdrupal"]
 }
+exec { "wgetdrush":
+  command => "wget -c ${drushurl} --output-document=drush.tar.gz",
+  creates => "${home}/drush.tar.gz",
+  path    => "/usr/bin",
+  cwd     => $home
+}
+exec { "unzipdrush":
+  command => "tar xvfz drush.tar.gz",
+  creates => "${home}/drush/drush",
+  path    => "/bin",
+  cwd     => $home,
+  require => Exec["wgetdrush"]
+}
+
+exec { "linkdrush":
+  command => "ln -s ${home}/${drushversion}/drush /usr/bin/drush",
+  creates => "/usr/bin/drush",
+  path    => ["/usr/bin", "/bin"],
+  cwd     => $home,
+  require => Exec["unzipdrush"]
+}
+
 /*
 exec { "chowndrupal":
   command => "chown -R www-data:www-data /home/vagrant/www",
@@ -65,15 +90,20 @@ exec { "chowndrupal":
   require => Exec["cpsettings"],
 }
 */
+exec { "chmoddrupal":
+  command => "chmod -R 774 ${home}/www",
+  path    => ["/usr/bin", "/bin"],
+  require => Exec["cpsettings"]
+}
 user { "www-data" :
   ensure => present,
-  groups => ["www-data"],
-  require => Exec["cpsettings"]
+  groups => ["vagrant"]
 }
 
 file { "${home}/www/${drupalver}/sites/default/files":
   owner => "www-data",
   ensure => directory,
+  before => Exec["chmoddrupal"],
   require => Exec["cpsettings"]
 }
 exec { "cpsettings":
