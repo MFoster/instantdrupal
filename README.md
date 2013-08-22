@@ -23,17 +23,6 @@ Vagrant is a virtualization utility to provide an easier to use
 command line interface that uses a configuration file to assist
 with how a virtual machine is built and set up.
 
-### Lucid Box
-
-
-The vagrant configuration file in this repo uses [lucid64][3] as it's box.
-This box is provided at the vagrant site.  Check out the [vagrant documentation][4]
-to learn more about adding boxes.
-
-```bash
-vagrant add lucid64 http://files.vagrantup.com/lucid64.box 
-```
-
 Installation
 ------------
 
