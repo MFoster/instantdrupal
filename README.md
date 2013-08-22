@@ -70,6 +70,17 @@ username: drupal_user
 password: time2shine
 ```
 
+Shared Folder on Host
+---------------------
+
+After the installation is up and running you will see a new folder in your instantdrupal directory.
+The directory "www" is a shared folder pointing at the guest's /home/vagrant/www directory.  This is where
+the drupal source code gets downloaded and stashed.
+
+To begin editing your Drupal installation, point your IDE to instantdrupal/www/${drupalversion} and you
+should be looking at your freshly downloaded copy of whatever drupal version you have configured, defaults to 
+drupal-7.23.
+
 [1]: http://www.vagrantup.com/                      "Vagrant"
 [2]: https://www.virtualbox.org/wiki/Downloads      "VirtualBox"
 [3]: http://files.vagrantup.com/lucid64.box         "Download Lucid 64"
