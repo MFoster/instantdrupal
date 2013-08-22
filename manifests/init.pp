@@ -2,6 +2,7 @@ $drupalurl = "http://ftp.drupal.org/files/projects/drupal-7.23.tar.gz"
 $drupalver = "drupal-7.23"
 $puppetver = "2.7.22-1puppetlabs1"
 $db_password = "time2shine"
+$home = "/home/vagrant"
 
 exec { "update":
   command => "apt-get update",
@@ -23,15 +24,20 @@ file { "/etc/apache2/conf.d/drupal.conf":
   owner => "www-data",
   notify => Service["apache2"],
   content => "NameVirtualHost *:80
-<Directory /var/www/drupal/current>
+<Directory /var/www/current>
   AllowOverride All
   Order Allow,Deny
   Allow from all
 </Directory>
 <VirtualHost *:80>
-  DocumentRoot /var/www/drupal/current
+  DocumentRoot /var/www/current
   ServerName local.drupalground.com
 </VirtualHost>"
+}
+
+file { "${home}/www":
+  ensure => directory,
+  owner => "vagrant"
 }
 
 file { "/var/www/drupal":
@@ -40,39 +46,47 @@ file { "/var/www/drupal":
 }
 exec { "wgetdrupal":
   command => "wget ${drupalurl}",
-  creates => "/var/www/drupal/${drupalver}.tar.gz",
-  cwd => "/var/www/drupal",
+  creates => "${home}/www/${drupalver}.tar.gz",
+  cwd => "${home}/www",
   path => "/usr/bin",
-  require => File["/var/www/drupal"]
+  require => File["${home}/www"]
 }
 exec { "unzipdrupal":
   command => "tar xvfz ${drupalver}.tar.gz",
-  cwd     => "/var/www/drupal",
+  cwd     => $home,
   path    => "/bin",
-  creates => "/var/www/drupal/${drupalver}",
+  creates => "${home}/www/${drupalver}",
   require => Exec["wgetdrupal"]
 }
+/*
 exec { "chowndrupal":
-  command => "chown -R www-data:www-data /var/www/drupal",
+  command => "chown -R www-data:www-data /home/vagrant/www",
   path    => ["/usr/bin", "/bin"],
   require => Exec["cpsettings"],
 }
-file { "/var/www/drupal/${drupalver}/sites/default/files":
+*/
+user { "www-data" :
+  ensure => present,
+  groups => ["www-data"],
+  require => Exec["cpsettings"]
+}
+
+file { "${home}/www/${drupalver}/sites/default/files":
   owner => "www-data",
   ensure => directory,
   require => Exec["cpsettings"]
 }
 exec { "cpsettings":
   command => "cp default.settings.php settings.php",
-  cwd => "/var/www/drupal/${drupalver}/sites/default",
+  cwd => "${home}/www/${drupalver}/sites/default",
   path => ["/bin", "/usr/bin"],
-  creates => "/var/www/drupal/${drupalver}/sites/default/settings.php",
+  creates => "${home}/www/${drupalver}/sites/default/settings.php",
   require => Exec["unzipdrupal"]
 }
 
-file { "/var/www/drupal/current":
+file { "/var/www/current":
   ensure => link,
-  target => "/var/www/drupal/${drupalver}",
+  target => "${home}/www/${drupalver}",
   require => Exec["unzipdrupal"]
 }
 
