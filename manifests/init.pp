@@ -12,7 +12,7 @@ exec { "update":
 package { ["apache2", "mysql-server", "git-core", "php5", "php5-mysql", "php5-gd"]:
   ensure => present,
   require => Exec["update"],
-  before => [Exec["createdb"], File["/etc/apache2/conf.d/drupal.conf"]]
+  before => [Exec["createdb"], User["www-data"], File["/etc/apache2/conf.d/drupal.conf"]]
 }
 
 service { "apache2":
@@ -37,7 +37,7 @@ file { "/etc/apache2/conf.d/drupal.conf":
 
 file { "${home}/www":
   ensure => directory,
-  owner => "vagrant"
+  owner => "www-data"
 }
 
 file { "/var/www":
@@ -66,15 +66,20 @@ exec { "chowndrupal":
   require => Exec["cpsettings"],
 }
 */
+exec { "chmoddrupal":
+  command => "chmod -R 774 ${home}/www",
+  path    => ["/usr/bin", "/bin"],
+  require => Exec["cpsettings"]
+}
 user { "www-data" :
   ensure => present,
-  groups => ["www-data"],
-  require => Exec["cpsettings"]
+  groups => ["vagrant"]
 }
 
 file { "${home}/www/${drupalver}/sites/default/files":
   owner => "www-data",
   ensure => directory,
+  before => Exec["chmoddrupal"],
   require => Exec["cpsettings"]
 }
 exec { "cpsettings":
