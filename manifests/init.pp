@@ -12,7 +12,7 @@ exec { "update":
 package { ["apache2", "mysql-server", "git-core", "php5", "php5-mysql", "php5-gd"]:
   ensure => present,
   require => Exec["update"],
-  before => [Exec["createdb"], File["/var/www/drupal"], File["/etc/apache2/conf.d/drupal.conf"]]
+  before => [Exec["createdb"], File["/etc/apache2/conf.d/drupal.conf"]]
 }
 
 service { "apache2":
@@ -40,9 +40,10 @@ file { "${home}/www":
   owner => "vagrant"
 }
 
-file { "/var/www/drupal":
+file { "/var/www":
   ensure => directory,
-  owner => "www-data"
+  owner => "www-data",
+  before => File["/var/www/current"]
 }
 exec { "wgetdrupal":
   command => "wget ${drupalurl}",
@@ -53,7 +54,7 @@ exec { "wgetdrupal":
 }
 exec { "unzipdrupal":
   command => "tar xvfz ${drupalver}.tar.gz",
-  cwd     => $home,
+  cwd     => "${home}/www",
   path    => "/bin",
   creates => "${home}/www/${drupalver}",
   require => Exec["wgetdrupal"]
